@@ -1,0 +1,54 @@
+{
+  "info": {
+    "name": "Smart Elevator API Postman Script",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Request Elevator Destination",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"from_floor\": 0\n,     \"to_floor\": 5\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/lift/request",
+          "host": ["{{base_url}}"],
+          "path": ["api", "lift", "request"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request Elevator Status's",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/lift/status",
+          "host": ["{{base_url}}"],
+          "path": ["api", "lift", "status"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Request Elevator Configuration",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/lift/config",
+          "host": ["{{base_url}}"],
+          "path": ["api", "lift", "config"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
