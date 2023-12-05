@@ -1,7 +1,15 @@
+@use "./variables" as *;
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
+  font-family: $font-primary;
+  font-weight: $font-weight-regular;
+  line-height: $line-height;
+
+  color: $colour-white;
 }
 
 :root {
@@ -10,4 +18,11 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: $colour-gradient-linear-blue;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
 }

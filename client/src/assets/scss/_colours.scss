@@ -1,0 +1,25 @@
+// colours
+$colour-blue-dark: #283948;
+$colour-blue-medium: #3c4e5e;
+$colour-blue-light: #50606e;
+
+$colour-green-dark: #28482b;
+$colour-green-medium: #4b5e3c;
+$colour-green-light: #5b6e50;
+
+$colour-white: #ffffff;
+
+// gradients
+$colour-gradient-linear-blue: linear-gradient(
+  to bottom right,
+  $colour-blue-light 0%,
+  $colour-blue-medium 50%,
+  $colour-blue-dark 100%
+);
+
+$colour-gradient-linear-green: linear-gradient(
+  to bottom right,
+  $colour-green-light 0%,
+  $colour-green-medium 50%,
+  $colour-green-dark 100%
+);
