@@ -1,0 +1,23 @@
+@use "../../assets/scss/variables" as *;
+
+.floor-display {
+  font-size: $font-size-large;
+  font-weight: $font-weight-light;
+  text-align: center;
+  padding: 1rem;
+  border-bottom: 2px solid $colour-grey-dark;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+
+  &__floor {
+    font-size: inherit;
+    font-weight: $font-weight-bold;
+  }
+
+  @media (min-width: $breakpoint-tablet) {
+    font-size: $font-size-extra-large;
+  }
+
+  @media (min-width: $breakpoint-desktop) {
+    font-size: $font-size-extra-extra-large;
+  }
+}

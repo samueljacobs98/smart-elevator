@@ -1,0 +1,22 @@
+@use "../../assets/scss/variables" as *;
+
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  @media (min-width: $breakpoint-tablet) {
+    gap: 1rem;
+  }
+
+  @media (min-width: $breakpoint-desktop) {
+    display: grid;
+    justify-items: center;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

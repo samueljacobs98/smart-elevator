@@ -1,0 +1,21 @@
+.layout {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "first first"
+    "second third";
+
+  & > :nth-child(1) {
+    grid-area: first;
+  }
+
+  & > :nth-child(2) {
+    grid-area: second;
+  }
+
+  & > :nth-child(3) {
+    grid-area: third;
+  }
+}

@@ -1,0 +1,12 @@
+@use "../../assets/scss/variables" as *;
+
+.status-tracker {
+  background-color: $colour-grey-dark;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}

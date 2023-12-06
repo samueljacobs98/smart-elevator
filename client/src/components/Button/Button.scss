@@ -1,0 +1,31 @@
+@use "../../assets/scss/variables" as *;
+
+.button {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: $colour-gradient-radial-blue;
+  border: 1px solid black;
+  text-align: center;
+  line-height: 4rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease-in-out;
+
+  &:hover {
+    box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.25);
+  }
+
+  &:active {
+    box-shadow: 0px 0px 2px 2px rgba(155, 155, 155, 0.25);
+  }
+
+  @media (min-width: $breakpoint-mobile) {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  @media (min-width: $breakpoint-tablet) {
+    width: 6rem;
+    height: 6rem;
+  }
+}
