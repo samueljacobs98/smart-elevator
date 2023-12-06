@@ -7,6 +7,8 @@ $colour-green-dark: #28482b;
 $colour-green-medium: #4b5e3c;
 $colour-green-light: #5b6e50;
 
+$colour-grey-dark: #1e1e1e;
+
 $colour-white: #ffffff;
 
 // gradients
@@ -22,4 +24,16 @@ $colour-gradient-linear-green: linear-gradient(
   $colour-green-light 0%,
   $colour-green-medium 50%,
   $colour-green-dark 100%
+);
+
+$colour-gradient-radial-blue: radial-gradient(
+  circle at center,
+  $colour-blue-dark,
+  $colour-blue-light
+);
+
+$colour-gradient-radial-blue-invert: radial-gradient(
+  circle at center,
+  $colour-blue-light,
+  $colour-blue-dark
 );

@@ -1,0 +1,7 @@
+@use "../../assets/scss/variables" as *;
+
+.lift-status {
+  background: $colour-gradient-linear-green;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+}
