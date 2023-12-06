@@ -44,12 +44,20 @@ function App() {
     []
   );
 
-  const onClick = (e) => {
-    console.log(e.target.value);
+  const onClick = (e, floorFrom) => {
+    const floorTo = parseInt(e.target.value);
+
+    console.log({ floorTo, floorFrom });
   };
 
   const buttons = floors.map((floor) => {
-    return <Button key={floor} onClick={onClick} floorNumber={floor} />;
+    return (
+      <Button
+        key={floor}
+        onClick={(e) => onClick(e, userFloor)}
+        floorNumber={floor}
+      />
+    );
   });
 
   const liftStatuses = Object.entries(liftStatus).map(
