@@ -7,12 +7,16 @@
 
   font-family: $font-primary;
   font-weight: $font-weight-regular;
-  font-size: $font-size-regular;
+  font-size: $font-size-small;
   line-height: $line-height;
 
   color: $colour-white;
 
   @media (min-width: $breakpoint-mobile) {
+    font-size: $font-size-medium;
+  }
+
+  @media (min-width: $breakpoint-tablet) {
     font-size: $font-size-large;
   }
 }
