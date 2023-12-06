@@ -7,23 +7,42 @@ import LiftStatus from "./components/LiftStatus/LiftStatus";
 import StatusTracker from "./components/StatusTracker/StatusTracker";
 import union from "lodash/union";
 
-function App() {
-  const liftConfig = {
+function getLiftConfig() {
+  return {
     lifts: {
       0: {
         servicedFloors: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       },
       1: {
-        servicedFloors: [0, 7, 8, 9, 10],
+        servicedFloors: [0, 1, 7, 8, 9, 10],
       },
     },
   };
-  const floors = union(
-    liftConfig.lifts[0].servicedFloors,
-    liftConfig.lifts[1].servicedFloors
-  );
+}
 
-  const userFloor = 0;
+function getLiftStatus() {
+  return {
+    0: {
+      floor: 0,
+      destinations: [1, 5, 10],
+    },
+    1: {
+      floor: 0,
+      destinations: [1, 10],
+    },
+  };
+}
+
+const userFloor = 0;
+
+function App() {
+  const liftConfig = getLiftConfig();
+  const liftStatus = getLiftStatus();
+
+  const floors = Object.values(liftConfig.lifts).reduce(
+    (acc, lift) => union(acc, lift.servicedFloors),
+    []
+  );
 
   const onClick = (e) => {
     console.log(e.target.value);
@@ -33,15 +52,22 @@ function App() {
     return <Button key={floor} onClick={onClick} floorNumber={floor} />;
   });
 
+  const liftStatuses = Object.entries(liftStatus).map(
+    ([liftNumber, status]) => (
+      <LiftStatus
+        key={liftNumber}
+        liftNumber={liftNumber}
+        currentFloor={status.floor}
+        destinations={status.destinations}
+      />
+    )
+  );
+
   return (
     <Layout>
       <FloorDisplay floor={userFloor} />
       <ButtonContainer>{buttons}</ButtonContainer>
-      <StatusTracker>
-        <LiftStatus liftNumber={1} queue={[1, 3, 4]} />
-        <LiftStatus liftNumber={2} queue={[1, 5, 9]} />
-        <LiftStatus liftNumber={5} queue={[2, 6, 7]} />
-      </StatusTracker>
+      <StatusTracker>{liftStatuses}</StatusTracker>
     </Layout>
   );
 }
