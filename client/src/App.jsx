@@ -5,6 +5,7 @@ import FloorDisplay from "./components/FloorDisplay/FloorDisplay";
 import Layout from "./components/Layout/Layout";
 import LiftStatus from "./components/LiftStatus/LiftStatus";
 import StatusTracker from "./components/StatusTracker/StatusTracker";
+import { useEffect, useState } from "react";
 import union from "lodash/union";
 
 function getLiftConfig() {
@@ -36,13 +37,26 @@ function getLiftStatus() {
 const userFloor = 0;
 
 function App() {
-  const liftConfig = getLiftConfig();
-  const liftStatus = getLiftStatus();
+  const [liftConfig, setLiftConfig] = useState(null);
+  const [liftStatus, setLiftStatus] = useState(null);
+  const [floors, setFloors] = useState([]);
 
-  const floors = Object.values(liftConfig.lifts).reduce(
-    (acc, lift) => union(acc, lift.servicedFloors),
-    []
-  );
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLiftConfig(getLiftConfig());
+      setLiftStatus(getLiftStatus());
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (!liftConfig) return;
+    const allServicedFloors = Object.values(liftConfig.lifts).reduce(
+      (acc, lift) => union(acc, lift.servicedFloors),
+      []
+    );
+    setFloors(allServicedFloors);
+  }, [liftConfig]);
 
   const onClick = (e, floorFrom) => {
     const floorTo = parseInt(e.target.value);
@@ -50,32 +64,34 @@ function App() {
     console.log({ floorTo, floorFrom });
   };
 
-  const buttons = floors.map((floor) => {
-    return (
-      <Button
-        key={floor}
-        onClick={(e) => onClick(e, userFloor)}
-        floorNumber={floor}
-      />
-    );
-  });
-
-  const liftStatuses = Object.entries(liftStatus).map(
-    ([liftNumber, status]) => (
-      <LiftStatus
-        key={liftNumber}
-        liftNumber={liftNumber}
-        currentFloor={status.floor}
-        destinations={status.destinations}
-      />
-    )
-  );
-
   return (
     <Layout>
       <FloorDisplay floor={userFloor} />
-      <ButtonContainer>{buttons}</ButtonContainer>
-      <StatusTracker>{liftStatuses}</StatusTracker>
+      {liftConfig && liftStatus && (
+        <>
+          <ButtonContainer>
+            {floors.map((floor) => {
+              return (
+                <Button
+                  key={floor}
+                  onClick={(e) => onClick(e, userFloor)}
+                  floorNumber={floor}
+                />
+              );
+            })}
+          </ButtonContainer>
+          <StatusTracker>
+            {Object.entries(liftStatus).map(([liftNumber, status]) => (
+              <LiftStatus
+                key={liftNumber}
+                liftNumber={liftNumber}
+                currentFloor={status.floor}
+                destinations={status.destinations}
+              />
+            ))}
+          </StatusTracker>
+        </>
+      )}
     </Layout>
   );
 }
