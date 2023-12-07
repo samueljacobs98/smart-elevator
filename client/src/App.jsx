@@ -5,7 +5,7 @@ import FloorDisplay from "./components/FloorDisplay/FloorDisplay";
 import Layout from "./components/Layout/Layout";
 import LiftStatus from "./components/LiftStatus/LiftStatus";
 import StatusTracker from "./components/StatusTracker/StatusTracker";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import union from "lodash/union";
 
 function getLiftConfig() {
