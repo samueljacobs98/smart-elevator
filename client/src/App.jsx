@@ -51,7 +51,7 @@ function App() {
   };
 
   return (
-    <Layout>
+    <Layout isLoading={!Boolean(liftConfig && liftStatus)}>
       <FloorDisplay floor={userFloor} />
       {/* TODO: Add loading element(s) */}
       {liftConfig && liftStatus && (
