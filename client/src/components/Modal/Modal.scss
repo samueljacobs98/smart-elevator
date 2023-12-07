@@ -1,0 +1,51 @@
+@use "../../assets/scss/variables" as *;
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    pointer-events: none;
+  }
+  25% {
+    opacity: 1;
+    pointer-events: all;
+  }
+  75% {
+    opacity: 1;
+    pointer-events: all;
+  }
+  100% {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.modal {
+  position: fixed;
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: grid;
+  place-items: center;
+  animation: fadeInOut 4s ease-in-out forwards;
+
+  .modal__content {
+    display: grid;
+    place-items: center;
+
+    width: fit-content;
+    background: $colour-gradient-linear-grey;
+    box-shadow: 4px 4px 6px 3px rgba(0, 0, 0, 0.5);
+
+    padding: 1rem;
+    margin: auto;
+
+    .modal__content__title {
+      text-align: center;
+    }
+
+    .modal__content__text {
+      font-size: 10rem;
+    }
+  }
+}
