@@ -2,9 +2,9 @@ import "./LiftStatus.scss";
 
 function getDirection(currentFloor, destinations) {
   if (destinations.some((floor) => floor > currentFloor)) {
-    return "up";
+    return "u";
   } else if (destinations.some((floor) => floor < currentFloor)) {
-    return "down";
+    return "d";
   }
 
   return "-";
@@ -32,16 +32,16 @@ const LiftStatus = ({ liftNumber, currentFloor, destinations }) => {
   return (
     <div className="lift-status">
       <div
-        className="lift-status__box lift-status__box--blue"
+        className="lift-status__box lift-status__box--green"
         aria-label="lift number"
       >
         {liftNumber}
       </div>
-      <div className="lift-status__box lift-status__box--green lift-status__box--order">
+      <div className="lift-status__box lift-status__box--blue lift-status__box--order">
         {floors}
       </div>
       <div
-        className="lift-status__box lift-status__box--blue"
+        className="lift-status__box lift-status__box--green"
         aria-label="direction"
       >
         {direction}

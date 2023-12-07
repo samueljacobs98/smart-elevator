@@ -9,7 +9,7 @@ server.use(middlewares);
 server.use(jsonServer.bodyParser);
 
 server.post("/api/lift/request", (req, res) => {
-  const liftNumber = Math.floor(Math.random() * 5) + 1;
+  const liftNumber = Math.floor(Math.random() * 3.99);
   res.json({ lift: liftNumber });
 });
 
