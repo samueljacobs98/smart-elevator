@@ -5,35 +5,11 @@ import FloorDisplay from "./components/FloorDisplay/FloorDisplay";
 import Layout from "./components/Layout/Layout";
 import LiftStatus from "./components/LiftStatus/LiftStatus";
 import StatusTracker from "./components/StatusTracker/StatusTracker";
+import { getData, postData } from "./utils/api";
 import { useEffect, useState } from "react";
 import union from "lodash/union";
 
-function getLiftConfig() {
-  return {
-    lifts: {
-      0: {
-        servicedFloors: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-      },
-      1: {
-        servicedFloors: [0, 1, 7, 8, 9, 10],
-      },
-    },
-  };
-}
-
-function getLiftStatus() {
-  return {
-    0: {
-      floor: 0,
-      destinations: [1, 5, 10],
-    },
-    1: {
-      floor: 0,
-      destinations: [1, 10],
-    },
-  };
-}
-
+// TODO: use env variable for user floor
 const userFloor = 0;
 
 function App() {
@@ -42,31 +18,42 @@ function App() {
   const [floors, setFloors] = useState([]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setLiftConfig(getLiftConfig());
-      setLiftStatus(getLiftStatus());
-    }, 3000);
-    return () => clearInterval(interval);
+    getData("api/lift/config", (data) => setLiftConfig(data));
+    getData("api/lift/status", ({ lifts }) => setLiftStatus(lifts));
+
+    // TODO: is this polling approach the best way to do this?
+    // TODO: use env variable for interval
+    // const interval = setInterval(() => {
+    //   getData("api/lift/status", ({ lifts }) => setLiftStatus(lifts));
+    // }, 1000);
+    // return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     if (!liftConfig) return;
     const allServicedFloors = Object.values(liftConfig.lifts).reduce(
-      (acc, lift) => union(acc, lift.servicedFloors),
+      (acc, lift) => union(acc, lift.serviced_floors),
       []
     );
     setFloors(allServicedFloors);
   }, [liftConfig]);
 
-  const onClick = (e, floorFrom) => {
-    const floorTo = parseInt(e.target.value);
+  const onClick = (e, from_floor) => {
+    const to_floor = parseInt(e.target.value);
 
-    console.log({ floorTo, floorFrom });
+    postData("api/lift/request", { from_floor, to_floor }, (data) => {
+      console.log(data);
+    });
+
+    getData("api/lift/status", ({ lifts }) => setLiftStatus(lifts));
+
+    console.log({ from_floor, to_floor });
   };
 
   return (
     <Layout>
       <FloorDisplay floor={userFloor} />
+      {/* TODO: Add loading element(s) */}
       {liftConfig && liftStatus && (
         <>
           <ButtonContainer>
