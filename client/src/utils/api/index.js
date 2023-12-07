@@ -2,11 +2,11 @@ import axios from "axios";
 
 const defaultOnError = (error) => console.error(error);
 
-// TODO: where to save these (getData + postData) functions?
+const baseUrl = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
+
 export const getData = async (path, andThen, onError = defaultOnError) => {
   try {
-    // TODO: use env variable for api url
-    const response = await axios.get(`http://localhost:3001/${path}`);
+    const response = await axios.get(`${baseUrl}/${path}`);
     andThen(response.data);
   } catch (error) {
     // TODO: improve error handling
@@ -21,7 +21,7 @@ export const postData = async (
   onError = defaultOnError
 ) => {
   try {
-    const response = await axios.post(`http://localhost:3001/${path}`, data);
+    const response = await axios.post(`${baseUrl}/${path}`, data);
     andThen(response.data);
   } catch (error) {
     onError(error);

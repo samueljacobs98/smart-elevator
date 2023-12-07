@@ -9,17 +9,19 @@ import { getData, postData } from "./utils/api";
 import { useEffect, useState } from "react";
 import union from "lodash/union";
 
-// TODO: use env variable for user floor
-const userFloor = 0;
-
 function App() {
   const [liftConfig, setLiftConfig] = useState(null);
   const [liftStatus, setLiftStatus] = useState(null);
   const [floors, setFloors] = useState([]);
 
+  const userFloor = process.env.REACT_APP_FLOOR;
+  if (!userFloor) {
+    throw new Error("REACT_APP_FLOOR env variable not set");
+  }
+
   useEffect(() => {
-    getData("api/lift/config", (data) => setLiftConfig(data));
-    getData("api/lift/status", ({ lifts }) => setLiftStatus(lifts));
+    getData("lift/config", (data) => setLiftConfig(data));
+    getData("lift/status", ({ lifts }) => setLiftStatus(lifts));
 
     // TODO: is this polling approach the best way to do this?
     // TODO: use env variable for interval
@@ -41,13 +43,11 @@ function App() {
   const onClick = (e, from_floor) => {
     const to_floor = parseInt(e.target.value);
 
-    postData("api/lift/request", { from_floor, to_floor }, (data) => {
+    postData("lift/request", { from_floor, to_floor }, (data) => {
       console.log(data);
     });
 
-    getData("api/lift/status", ({ lifts }) => setLiftStatus(lifts));
-
-    console.log({ from_floor, to_floor });
+    getData("lift/status", ({ lifts }) => setLiftStatus(lifts));
   };
 
   return (
