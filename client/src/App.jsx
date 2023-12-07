@@ -8,11 +8,14 @@ import StatusTracker from "./components/StatusTracker/StatusTracker";
 import { getData, postData } from "./utils/api";
 import { useEffect, useState } from "react";
 import union from "lodash/union";
+import Modal from "./components/Modal/Modal";
 
 function App() {
   const [liftConfig, setLiftConfig] = useState(null);
   const [liftStatus, setLiftStatus] = useState(null);
   const [floors, setFloors] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState({ lift: null, to: null });
 
   const userFloor = process.env.REACT_APP_FLOOR;
   if (!userFloor) {
@@ -26,7 +29,7 @@ function App() {
     // TODO: is this polling approach the best way to do this?
     // TODO: use env variable for interval
     // const interval = setInterval(() => {
-    //   getData("api/lift/status", ({ lifts }) => setLiftStatus(lifts));
+    //   getData("lift/status", ({ lifts }) => setLiftStatus(lifts));
     // }, 1000);
     // return () => clearInterval(interval);
   }, []);
@@ -40,14 +43,19 @@ function App() {
     setFloors(allServicedFloors);
   }, [liftConfig]);
 
-  const onClick = (e, from_floor) => {
+  const onClick = async (e, from_floor) => {
     const to_floor = parseInt(e.target.value);
 
-    postData("lift/request", { from_floor, to_floor }, (data) => {
-      console.log(data);
-    });
+    const { lift } = await postData(
+      "lift/request",
+      { from_floor, to_floor },
+      (data) => data
+    );
 
     getData("lift/status", ({ lifts }) => setLiftStatus(lifts));
+
+    setShowModal(true);
+    setModalData({ lift: lift, to: to_floor });
   };
 
   return (
@@ -78,6 +86,16 @@ function App() {
             ))}
           </StatusTracker>
         </>
+      )}
+      {showModal && (
+        <Modal
+          lift={modalData.lift}
+          to={modalData.to}
+          hideModal={() => {
+            setShowModal(false);
+            setModalData({ lift: null, to: null });
+          }}
+        />
       )}
     </Layout>
   );

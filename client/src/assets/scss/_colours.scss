@@ -8,6 +8,8 @@ $colour-green-medium: #4b5e3c;
 $colour-green-light: #5b6e50;
 
 $colour-grey-dark: #1e1e1e;
+$colour-grey-medium: #626262;
+$colour-grey-light: #6b6b6b;
 
 $colour-white: #ffffff;
 $colour-yellow: #fff500;
@@ -25,6 +27,13 @@ $colour-gradient-linear-green: linear-gradient(
   $colour-green-light 0%,
   $colour-green-medium 50%,
   $colour-green-dark 100%
+);
+
+$colour-gradient-linear-grey: linear-gradient(
+  to bottom right,
+  $colour-grey-light 0%,
+  $colour-grey-medium 50%,
+  $colour-grey-dark 100%
 );
 
 $colour-gradient-radial-blue: radial-gradient(
