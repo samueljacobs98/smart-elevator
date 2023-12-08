@@ -9,8 +9,16 @@ server.use(middlewares);
 server.use(jsonServer.bodyParser);
 
 server.post("/api/lift/request", (req, res) => {
-  const liftNumber = Math.floor(Math.random() * 3.99);
-  res.json({ lift: liftNumber });
+  const db = router.db;
+  const status = db.get("status").value();
+
+  const maybeLift = Object.keys(status.lifts).find((lift) => {
+    return status.lifts[lift].destinations.includes(req.body.to_floor);
+  });
+
+  const lift = maybeLift ? maybeLift : "A";
+
+  res.json({ lift });
 });
 
 server.get("/api/lift/status", (req, res) => {

@@ -3,19 +3,23 @@ import Button from "./components/Button/Button";
 import ButtonContainer from "./components/ButtonContainer/ButtonContainer";
 import FloorDisplay from "./components/FloorDisplay/FloorDisplay";
 import Layout from "./components/Layout/Layout";
-import LiftStatus from "./components/LiftStatus/LiftStatus";
-import StatusTracker from "./components/StatusTracker/StatusTracker";
 import { getData, postData } from "./utils/api";
 import { useEffect, useState } from "react";
 import union from "lodash/union";
 import Modal from "./components/Modal/Modal";
+import DestinationTracker from "./components/DestinationTracker/DestinationTracker";
 
 function App() {
   const [liftConfig, setLiftConfig] = useState(null);
   const [liftStatus, setLiftStatus] = useState(null);
   const [floors, setFloors] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState({ lift: null, to: null });
+  const [modalData, setModalData] = useState({
+    lift: null,
+    to: null,
+    at: null,
+  });
+  const [queueData, setQueueData] = useState([]);
 
   const userFloor = process.env.REACT_APP_FLOOR;
   if (!userFloor) {
@@ -24,7 +28,7 @@ function App() {
 
   useEffect(() => {
     getData("lift/config", (data) => setLiftConfig(data));
-    getData("lift/status", ({ lifts }) => setLiftStatus(lifts));
+    getData("lift/status", (data) => setLiftStatus(data));
 
     // TODO: is this polling approach the best way to do this?
     // TODO: use env variable for interval
@@ -43,19 +47,56 @@ function App() {
     setFloors(allServicedFloors);
   }, [liftConfig]);
 
-  const onClick = async (e, from_floor) => {
+  useEffect(() => {
+    if (!liftStatus) return;
+    setQueueData(
+      Object.entries(liftStatus.lifts).reduce(
+        (acc, [lift, { destinations }]) => {
+          destinations.forEach((destination) => {
+            const floorObj = acc.find(
+              (floorObj) => floorObj.floor === destination
+            );
+            if (floorObj) {
+              floorObj.lifts.push(lift);
+            } else {
+              acc.push({ floor: destination, lifts: [lift] });
+            }
+          });
+          return acc;
+        },
+        []
+      )
+    );
+  }, [liftStatus]);
+
+  const onClick = async (e) => {
     const to_floor = parseInt(e.target.value);
 
-    const { lift } = await postData(
+    if (liftStatus.lifts) {
+      Object.entries(liftStatus.lifts).forEach((i) => console.log(i));
+      const liftAlreadyGoingToFloor = Object.entries(liftStatus.lifts).find(
+        ([_, { floor, destinations }]) => destinations.includes(to_floor)
+      );
+
+      if (liftAlreadyGoingToFloor) {
+        const lift = liftAlreadyGoingToFloor[0];
+        const floor = liftAlreadyGoingToFloor[1].floor;
+        setModalData({ lift, to: to_floor, at: floor });
+        setShowModal(true);
+        return;
+      }
+    }
+
+    const res = await postData(
       "lift/request",
-      { from_floor, to_floor },
+      { from_floor: userFloor, to_floor },
       (data) => data
     );
 
-    getData("lift/status", ({ lifts }) => setLiftStatus(lifts));
+    await getData("lift/status", (data) => setLiftStatus(data));
 
+    setModalData({ lift: res.lift, to: to_floor });
     setShowModal(true);
-    setModalData({ lift: lift, to: to_floor });
   };
 
   return (
@@ -67,24 +108,11 @@ function App() {
           <ButtonContainer>
             {floors.map((floor) => {
               return (
-                <Button
-                  key={floor}
-                  onClick={(e) => onClick(e, userFloor)}
-                  floorNumber={floor}
-                />
+                <Button key={floor} onClick={onClick} floorNumber={floor} />
               );
             })}
           </ButtonContainer>
-          <StatusTracker>
-            {Object.entries(liftStatus).map(([liftNumber, status]) => (
-              <LiftStatus
-                key={liftNumber}
-                liftNumber={liftNumber}
-                currentFloor={status.floor}
-                destinations={status.destinations}
-              />
-            ))}
-          </StatusTracker>
+          <DestinationTracker queueData={queueData} />
         </>
       )}
       {showModal && (
@@ -93,7 +121,7 @@ function App() {
           to={modalData.to}
           hideModal={() => {
             setShowModal(false);
-            setModalData({ lift: null, to: null });
+            setModalData({ lift: null, to: null, at: null });
           }}
         />
       )}
