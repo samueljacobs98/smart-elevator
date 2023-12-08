@@ -1,19 +1,19 @@
 {
   "status": {
     "lifts": {
-      "0": {
+      "A": {
         "floor": 2,
         "destinations": [1, 5, 10]
       },
-      "1": {
+      "B": {
         "floor": 0,
         "destinations": [7, 10]
       },
-      "2": {
+      "C": {
         "floor": 5,
         "destinations": [0, 1, 2]
       },
-      "3": {
+      "D": {
         "floor": 8,
         "destinations": [7, 10]
       }
@@ -21,16 +21,16 @@
   },
   "config": {
     "lifts": {
-      "0": {
+      "E": {
         "serviced_floors": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
       },
-      "1": {
+      "F": {
         "serviced_floors": [0, 7, 8, 9, 10]
       },
-      "2": {
+      "G": {
         "serviced_floors": [0, 1, 2, 3, 4, 5]
       },
-      "3": {
+      "H": {
         "serviced_floors": [6, 7, 8, 9, 10]
       }
     }
