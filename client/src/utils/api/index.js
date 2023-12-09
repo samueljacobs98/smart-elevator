@@ -1,3 +1,4 @@
+import { filterLiftStatus } from "../helpers";
 import axios from "axios";
 
 const defaultOnError = (error) => console.error(error);
@@ -27,3 +28,8 @@ export const postData = async (
     onError(error);
   }
 };
+
+export const getConfig = () => getData("lift/config", (data) => data);
+
+export const getLiftStatus = (userFloor) =>
+  getData("lift/status", ({ lifts }) => filterLiftStatus(lifts, userFloor));

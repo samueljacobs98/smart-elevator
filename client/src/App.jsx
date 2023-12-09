@@ -6,48 +6,60 @@ import Layout from "./components/Layout/Layout";
 import Modal from "./components/Modal/Modal";
 import DestinationTrackerContainer from "./components/DestinationTrackerContainer/DestinationTrackerContainer";
 import DestinationTrackerItem from "./components/DestinationTrackerItem/DestinationTrackerItem";
-import { getData, postData } from "./utils/api";
-import { mapLiftStatusData, filterLiftStatus } from "./utils/helpers";
-import { useEffect, useRef, useState } from "react";
+import { getConfig, getLiftStatus, postData } from "./utils/api";
+import { mapLiftStatusData } from "./utils/helpers";
+import { useEffect, useRef, useState, useCallback } from "react";
 import union from "lodash/union";
+import { EnvVariableError } from "./utils/errors";
 
 function App() {
-  // TODO: context API?
   const [liftConfig, setLiftConfig] = useState(null);
   const [liftStatus, setLiftStatus] = useState(null);
   const [floors, setFloors] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({
     lift: null,
-    to: null,
-    at: null,
+    toFloor: null,
   });
   const [queueData, setQueueData] = useState([]);
   const [arrived, setArrived] = useState(new Set());
 
-  const userFloorRef = useRef(parseInt(process.env.REACT_APP_FLOOR));
-  if (userFloorRef.current == null) {
-    throw new Error("REACT_APP_FLOOR env variable not set");
-  }
-  const pollingIntervalRef = useRef(
-    process.env.REACT_APP_POLLING_INTERVAL || 10
+  const userFloorRef = useRef(
+    process.env.REACT_APP_FLOOR ? parseInt(process.env.REACT_APP_FLOOR) : null
   );
 
+  if (isNaN(userFloorRef.current)) {
+    throw new EnvVariableError("REACT_APP_FLOOR");
+  }
+
+  const pollingIntervalRef = useRef(
+    process.env.REACT_APP_POLLING_INTERVAL
+      ? parseInt(process.env.REACT_APP_POLLING_INTERVAL)
+      : 10
+  );
+  if (isNaN(pollingIntervalRef.current)) {
+    throw new EnvVariableError("REACT_APP_POLLING_INTERVAL");
+  }
+
+  const getConfigCallback = useCallback(async () => {
+    const config = await getConfig();
+    if (config) setLiftConfig(config);
+  }, []);
+
+  const getLiftStatusCallback = useCallback(async () => {
+    const status = await getLiftStatus(userFloorRef.current);
+    if (status) setLiftStatus(status);
+  }, []);
+
   useEffect(() => {
-    getData("lift/config", (data) => setLiftConfig(data));
-    getData("lift/status", ({ lifts }) => {
-      const filteredData = filterLiftStatus(lifts, userFloorRef.current);
-      setLiftStatus(filteredData);
-    });
+    getConfigCallback();
+    getLiftStatusCallback();
 
     const interval = setInterval(() => {
-      getData("lift/status", ({ lifts }) => {
-        const filteredData = filterLiftStatus(lifts, userFloorRef.current);
-        setLiftStatus(filteredData);
-      });
+      getLiftStatus();
     }, pollingIntervalRef.current * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [getConfigCallback, getLiftStatusCallback]);
 
   useEffect(() => {
     if (!liftConfig) return;
@@ -83,8 +95,8 @@ function App() {
       );
 
       if (alreadyGoingToFloorLiftData) {
-        const [lift, { floor }] = alreadyGoingToFloorLiftData;
-        setModalData({ lift, to: toFloor, at: floor });
+        const lift = alreadyGoingToFloorLiftData[0];
+        setModalData({ lift, toFloor });
         setShowModal(true);
         return;
       }
@@ -96,12 +108,9 @@ function App() {
       (data) => data
     );
 
-    await getData("lift/status", ({ lifts }) => {
-      const filteredData = filterLiftStatus(lifts, userFloorRef.current);
-      setLiftStatus(filteredData);
-    });
+    await getLiftStatus();
 
-    setModalData({ lift, to: toFloor });
+    setModalData({ lift, toFloor });
     setShowModal(true);
   };
 
@@ -142,11 +151,11 @@ function App() {
       {showModal && (
         <Modal
           lift={modalData.lift}
-          to={modalData.to}
+          to={modalData.toFloor}
           showModal={showModal}
           hideModal={() => {
             setShowModal(false);
-            setModalData({ lift: null, to: null, at: null });
+            setModalData({ lift: null, toFloor: null });
           }}
         />
       )}
