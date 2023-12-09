@@ -9,7 +9,6 @@ import DestinationTrackerItem from "./components/DestinationTrackerItem/Destinat
 import { getConfig, getLiftStatus, postData } from "./utils/api";
 import { mapLiftStatusData } from "./utils/helpers";
 import { useEffect, useRef, useState, useCallback } from "react";
-import union from "lodash/union";
 import { EnvVariableError } from "./utils/errors";
 
 function App() {
@@ -65,7 +64,13 @@ function App() {
     if (!liftConfig) return;
 
     const allServicedFloors = Object.values(liftConfig.lifts).reduce(
-      (acc, lift) => union(acc, lift.serviced_floors),
+      (acc, lift) => {
+        lift.serviced_floors.forEach((floor) => {
+          if (!acc.includes(floor)) acc.push(floor);
+        });
+
+        return acc;
+      },
       []
     );
 
