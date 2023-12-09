@@ -3,10 +3,11 @@ import Button from "./components/Button/Button";
 import ButtonContainer from "./components/ButtonContainer/ButtonContainer";
 import FloorDisplay from "./components/FloorDisplay/FloorDisplay";
 import Layout from "./components/Layout/Layout";
-import { getData, postData } from "./utils/api";
 import Modal from "./components/Modal/Modal";
 import DestinationTrackerContainer from "./components/DestinationTrackerContainer/DestinationTrackerContainer";
 import DestinationTrackerItem from "./components/DestinationTrackerItem/DestinationTrackerItem";
+import { getData, postData } from "./utils/api";
+import { mapLiftStatusData } from "./utils/helpers";
 import { useEffect, useRef, useState } from "react";
 import union from "lodash/union";
 
@@ -52,31 +53,13 @@ function App() {
     setFloors(allServicedFloors);
   }, [liftConfig]);
 
-  function mapLiftStatusData(liftsData) {
-    const result = {};
-    const updatedArrived = new Set();
-
-    for (const lift in liftsData) {
-      if (liftsData[lift].floor === userFloorRef.current) {
-        updatedArrived.add(lift);
-      }
-
-      liftsData[lift].destinations.forEach((destination) => {
-        if (!result[destination]) {
-          result[destination] = [];
-        }
-
-        result[destination].push(lift);
-      });
-    }
-
-    return [result, updatedArrived];
-  }
-
   useEffect(() => {
     if (!liftStatus) return;
 
-    const [mappedData, updatedArrived] = mapLiftStatusData(liftStatus.lifts);
+    const [mappedData, updatedArrived] = mapLiftStatusData(
+      liftStatus.lifts,
+      userFloorRef.current
+    );
 
     setArrived(updatedArrived);
     setQueueData(mappedData);
@@ -88,20 +71,19 @@ function App() {
     const toFloor = parseInt(e.target.value);
 
     if (liftStatus.lifts) {
-      const liftAlreadyGoingToFloor = Object.entries(liftStatus.lifts).find(
+      const alreadyGoingToFloorLiftData = Object.entries(liftStatus.lifts).find(
         ([_, { destinations }]) => destinations.includes(toFloor)
       );
 
-      if (liftAlreadyGoingToFloor) {
-        const lift = liftAlreadyGoingToFloor[0];
-        const floor = liftAlreadyGoingToFloor[1].floor;
+      if (alreadyGoingToFloorLiftData) {
+        const [lift, { floor }] = alreadyGoingToFloorLiftData;
         setModalData({ lift, to: toFloor, at: floor });
         setShowModal(true);
         return;
       }
     }
 
-    const res = await postData(
+    const { lift } = await postData(
       "lift/request",
       { from_floor: userFloorRef.current, to_floor: toFloor },
       (data) => data
@@ -109,7 +91,7 @@ function App() {
 
     await getData("lift/status", (data) => setLiftStatus(data));
 
-    setModalData({ lift: res.lift, to: toFloor });
+    setModalData({ lift, to: toFloor });
     setShowModal(true);
   };
 
