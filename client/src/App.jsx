@@ -7,7 +7,7 @@ import Modal from "./components/Modal/Modal";
 import DestinationTrackerContainer from "./components/DestinationTrackerContainer/DestinationTrackerContainer";
 import DestinationTrackerItem from "./components/DestinationTrackerItem/DestinationTrackerItem";
 import { getData, postData } from "./utils/api";
-import { mapLiftStatusData } from "./utils/helpers";
+import { mapLiftStatusData, filterLiftStatus } from "./utils/helpers";
 import { useEffect, useRef, useState } from "react";
 import union from "lodash/union";
 
@@ -35,21 +35,28 @@ function App() {
 
   useEffect(() => {
     getData("lift/config", (data) => setLiftConfig(data));
-    getData("lift/status", (data) => setLiftStatus(data));
+    getData("lift/status", ({ lifts }) => {
+      const filteredData = filterLiftStatus(lifts, userFloorRef.current);
+      setLiftStatus(filteredData);
+    });
 
-    // TODO: is this polling approach the best way to do this?
     const interval = setInterval(() => {
-      getData("lift/status", (data) => setLiftStatus(data));
+      getData("lift/status", ({ lifts }) => {
+        const filteredData = filterLiftStatus(lifts, userFloorRef.current);
+        setLiftStatus(filteredData);
+      });
     }, pollingIntervalRef.current * 1000);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     if (!liftConfig) return;
+
     const allServicedFloors = Object.values(liftConfig.lifts).reduce(
       (acc, lift) => union(acc, lift.serviced_floors),
       []
     );
+
     setFloors(allServicedFloors);
   }, [liftConfig]);
 
@@ -57,7 +64,7 @@ function App() {
     if (!liftStatus) return;
 
     const [mappedData, updatedArrived] = mapLiftStatusData(
-      liftStatus.lifts,
+      liftStatus,
       userFloorRef.current
     );
 
@@ -70,8 +77,8 @@ function App() {
 
     const toFloor = parseInt(e.target.value);
 
-    if (liftStatus.lifts) {
-      const alreadyGoingToFloorLiftData = Object.entries(liftStatus.lifts).find(
+    if (liftStatus) {
+      const alreadyGoingToFloorLiftData = Object.entries(liftStatus).find(
         ([_, { destinations }]) => destinations.includes(toFloor)
       );
 
@@ -89,7 +96,10 @@ function App() {
       (data) => data
     );
 
-    await getData("lift/status", (data) => setLiftStatus(data));
+    await getData("lift/status", ({ lifts }) => {
+      const filteredData = filterLiftStatus(lifts, userFloorRef.current);
+      setLiftStatus(filteredData);
+    });
 
     setModalData({ lift, to: toFloor });
     setShowModal(true);
@@ -103,6 +113,7 @@ function App() {
         <>
           <ButtonContainer>
             {floors.map((floor) => {
+              if (floor === userFloorRef.current) return null;
               return (
                 <Button
                   key={floor}
@@ -114,14 +125,17 @@ function App() {
             })}
           </ButtonContainer>
           <DestinationTrackerContainer>
-            {Object.entries(queueData).map(([floor, lifts]) => (
-              <DestinationTrackerItem
-                key={floor}
-                floor={floor}
-                lifts={lifts}
-                arrived={arrived}
-              />
-            ))}
+            {Object.entries(queueData).map(([floor, lifts]) => {
+              if (parseInt(floor) === userFloorRef.current) return null;
+              return (
+                <DestinationTrackerItem
+                  key={floor}
+                  floor={floor}
+                  lifts={lifts}
+                  arrived={arrived}
+                />
+              );
+            })}
           </DestinationTrackerContainer>
         </>
       )}

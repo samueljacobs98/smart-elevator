@@ -25,3 +25,12 @@ REACT_APP_API_URL=<api base url>
 6. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 If you require a dummy server to be running locally, follow the instructions in the [server repository](../server/README.md).
+
+## Developer's Notes
+
+### Assumptions and Design Decisions
+
+- If the floor the user is on is not a destination of a given lift the lift will not stop at that floor. Therefore, if the lift is not currently on the user's floor, it should not be listed on the panel.
+- As there could be multiple panels, it is assumed that the state management of the system is all handled by the backend. Ideally, an approach such as a WebSocket would allow live updates to the panels. Since the state data is retrieved from the backend via a REST API, a polling approach has been used to update the state of the panel. The polling interval is configurable via the `.env` file.
+- As the application is fairly simple, the state management is handled by the `App` component. If the application were to grow the Context API or a state management library such as Redux could be used.
+- Likewise, as the application is fairly simple, the `App` component handled most of the logic. Again, if the application were to grow, the logic could be moved into separate components.
