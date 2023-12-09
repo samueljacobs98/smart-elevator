@@ -16,7 +16,7 @@ server.post("/api/lift/request", (req, res) => {
     return status.lifts[lift].destinations.includes(req.body.to_floor);
   });
 
-  const lift = maybeLift ? maybeLift : "A";
+  const lift = maybeLift ? maybeLift : "B";
 
   res.json({ lift });
 });
