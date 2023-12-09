@@ -19,15 +19,15 @@ export const mapLiftStatusData = (liftsData, userFloor) => {
   return [result, updatedArrived];
 };
 
-export const filterLiftStatus = (liftStatus, userFloor) => {
-  const filteredData = { lifts: {} };
+export const filterLiftStatus = (lifts, userFloor) => {
+  const filteredData = {};
 
-  Object.keys(liftStatus.lifts).forEach((lift) => {
+  Object.keys(lifts).forEach((lift) => {
     if (
-      liftStatus.lifts[lift].destinations.includes(userFloor) ||
-      liftStatus.lifts[lift].floor === userFloor
+      lifts[lift].destinations.includes(userFloor) ||
+      lifts[lift].floor === userFloor
     ) {
-      filteredData.lifts[lift] = liftStatus.lifts[lift];
+      filteredData[lift] = lifts[lift];
     }
   });
 

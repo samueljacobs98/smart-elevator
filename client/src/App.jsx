@@ -35,14 +35,14 @@ function App() {
 
   useEffect(() => {
     getData("lift/config", (data) => setLiftConfig(data));
-    getData("lift/status", (data) => {
-      const filteredData = filterLiftStatus(data, userFloorRef.current);
+    getData("lift/status", ({ lifts }) => {
+      const filteredData = filterLiftStatus(lifts, userFloorRef.current);
       setLiftStatus(filteredData);
     });
 
     const interval = setInterval(() => {
-      getData("lift/status", (data) => {
-        const filteredData = filterLiftStatus(data, userFloorRef.current);
+      getData("lift/status", ({ lifts }) => {
+        const filteredData = filterLiftStatus(lifts, userFloorRef.current);
         setLiftStatus(filteredData);
       });
     }, pollingIntervalRef.current * 1000);
@@ -64,7 +64,7 @@ function App() {
     if (!liftStatus) return;
 
     const [mappedData, updatedArrived] = mapLiftStatusData(
-      liftStatus.lifts,
+      liftStatus,
       userFloorRef.current
     );
 
@@ -77,8 +77,8 @@ function App() {
 
     const toFloor = parseInt(e.target.value);
 
-    if (liftStatus.lifts) {
-      const alreadyGoingToFloorLiftData = Object.entries(liftStatus.lifts).find(
+    if (liftStatus) {
+      const alreadyGoingToFloorLiftData = Object.entries(liftStatus).find(
         ([_, { destinations }]) => destinations.includes(toFloor)
       );
 
@@ -96,8 +96,8 @@ function App() {
       (data) => data
     );
 
-    await getData("lift/status", (data) => {
-      const filteredData = filterLiftStatus(data, userFloorRef.current);
+    await getData("lift/status", ({ lifts }) => {
+      const filteredData = filterLiftStatus(lifts, userFloorRef.current);
       setLiftStatus(filteredData);
     });
 
