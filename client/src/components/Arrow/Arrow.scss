@@ -1,0 +1,24 @@
+@use "../../assets/scss/variables" as *;
+
+.arrow {
+  width: 1rem;
+  margin: 0.5rem;
+  filter: brightness(0.2);
+
+  &--active {
+    scale: 1.5;
+    filter: brightness(1);
+  }
+
+  @media (min-width: $breakpoint-mobile) {
+    width: 1.5rem;
+  }
+
+  @media (min-width: $breakpoint-tablet) {
+    width: 2.5rem;
+  }
+
+  &--left {
+    transform: rotate(180deg);
+  }
+}
