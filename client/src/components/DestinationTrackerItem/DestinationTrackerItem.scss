@@ -1,0 +1,29 @@
+@use "../../assets/scss/variables" as *;
+
+.item {
+  display: flex;
+
+  &__box {
+    width: 100%;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+
+    &--floor {
+      max-width: 3rem;
+      background: $colour-gradient-linear-green;
+      justify-content: center;
+    }
+
+    &--lifts {
+      background: $colour-gradient-linear-blue;
+      justify-content: flex-start;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    &__lift {
+      color: $colour-yellow;
+    }
+  }
+}
