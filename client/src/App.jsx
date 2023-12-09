@@ -3,10 +3,11 @@ import Button from "./components/Button/Button";
 import ButtonContainer from "./components/ButtonContainer/ButtonContainer";
 import FloorDisplay from "./components/FloorDisplay/FloorDisplay";
 import Layout from "./components/Layout/Layout";
-import { getData, postData } from "./utils/api";
 import Modal from "./components/Modal/Modal";
 import DestinationTrackerContainer from "./components/DestinationTrackerContainer/DestinationTrackerContainer";
 import DestinationTrackerItem from "./components/DestinationTrackerItem/DestinationTrackerItem";
+import { getData, postData } from "./utils/api";
+import { mapLiftStatusData } from "./utils/helpers";
 import { useEffect, useRef, useState } from "react";
 import union from "lodash/union";
 
@@ -54,48 +55,35 @@ function App() {
 
   useEffect(() => {
     if (!liftStatus) return;
-    setQueueData(
-      // can this be done more efficiently?
-      Object.entries(liftStatus.lifts).reduce(
-        (acc, [lift, { floor, destinations }]) => {
-          if (floor === userFloorRef.current) {
-            setArrived((arrived) => new Set(arrived).add(lift));
-          }
 
-          destinations.forEach((destination) => {
-            const floorObj = acc.find(({ floor }) => floor === destination);
-            if (floorObj) {
-              floorObj.lifts.push(lift);
-            } else {
-              acc.push({ floor: destination, lifts: [lift] });
-            }
-          });
-
-          return acc;
-        },
-        []
-      )
+    const [mappedData, updatedArrived] = mapLiftStatusData(
+      liftStatus.lifts,
+      userFloorRef.current
     );
+
+    setArrived(updatedArrived);
+    setQueueData(mappedData);
   }, [liftStatus]);
 
   const onClick = async (e) => {
+    if (showModal) return;
+
     const toFloor = parseInt(e.target.value);
 
     if (liftStatus.lifts) {
-      const liftAlreadyGoingToFloor = Object.entries(liftStatus.lifts).find(
+      const alreadyGoingToFloorLiftData = Object.entries(liftStatus.lifts).find(
         ([_, { destinations }]) => destinations.includes(toFloor)
       );
 
-      if (liftAlreadyGoingToFloor) {
-        const lift = liftAlreadyGoingToFloor[0];
-        const floor = liftAlreadyGoingToFloor[1].floor;
+      if (alreadyGoingToFloorLiftData) {
+        const [lift, { floor }] = alreadyGoingToFloorLiftData;
         setModalData({ lift, to: toFloor, at: floor });
         setShowModal(true);
         return;
       }
     }
 
-    const res = await postData(
+    const { lift } = await postData(
       "lift/request",
       { from_floor: userFloorRef.current, to_floor: toFloor },
       (data) => data
@@ -103,7 +91,7 @@ function App() {
 
     await getData("lift/status", (data) => setLiftStatus(data));
 
-    setModalData({ lift: res.lift, to: toFloor });
+    setModalData({ lift, to: toFloor });
     setShowModal(true);
   };
 
@@ -116,21 +104,24 @@ function App() {
           <ButtonContainer>
             {floors.map((floor) => {
               return (
-                <Button key={floor} onClick={onClick} floorNumber={floor} />
+                <Button
+                  key={floor}
+                  onClick={onClick}
+                  floorNumber={floor}
+                  isDisabled={showModal}
+                />
               );
             })}
           </ButtonContainer>
           <DestinationTrackerContainer>
-            {queueData.map((data) => {
-              return (
-                <DestinationTrackerItem
-                  key={data.floor}
-                  floor={data.floor}
-                  lifts={data.lifts}
-                  arrived={arrived}
-                />
-              );
-            })}
+            {Object.entries(queueData).map(([floor, lifts]) => (
+              <DestinationTrackerItem
+                key={floor}
+                floor={floor}
+                lifts={lifts}
+                arrived={arrived}
+              />
+            ))}
           </DestinationTrackerContainer>
         </>
       )}
@@ -138,6 +129,7 @@ function App() {
         <Modal
           lift={modalData.lift}
           to={modalData.to}
+          showModal={showModal}
           hideModal={() => {
             setShowModal(false);
             setModalData({ lift: null, to: null, at: null });

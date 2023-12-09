@@ -47,3 +47,9 @@ $colour-gradient-radial-blue-invert: radial-gradient(
   $colour-blue-light,
   $colour-blue-dark
 );
+
+$colour-gradient-radial-grey: radial-gradient(
+  circle at center,
+  $colour-grey-dark,
+  $colour-grey-light
+);
