@@ -40,12 +40,19 @@
     margin: auto;
     border-radius: 1rem;
 
-    .modal__content__title {
+    &__title {
       text-align: center;
     }
 
-    .modal__content__text {
-      font-size: 10rem;
+    &__main {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: center;
+
+      &__text {
+        font-size: 10rem;
+      }
     }
   }
 }

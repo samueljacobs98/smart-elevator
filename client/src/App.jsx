@@ -28,7 +28,7 @@ function App() {
     process.env.REACT_APP_FLOOR ? parseInt(process.env.REACT_APP_FLOOR) : null
   );
 
-  if (isNaN(userFloorRef.current)) {
+  if (isNaN(userFloorRef.current) || userFloorRef.current === null) {
     throw new EnvVariableError("REACT_APP_FLOOR");
   }
 
@@ -157,6 +157,7 @@ function App() {
             setShowModal(false);
             setModalData({ lift: null, toFloor: null });
           }}
+          lifts={Object.keys(liftConfig.lifts)}
         />
       )}
     </Layout>

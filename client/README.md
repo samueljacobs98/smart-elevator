@@ -44,3 +44,5 @@ If you require a dummy server to be running locally, follow the instructions in 
 - Likewise, as the application is fairly simple, the `App` component handled most of the logic. Again, if the application were to grow, the logic could be moved into separate components.
 - If a user calls a lift to a floor that is already a destination of a suitable given lift, this lift will be displayed in the modal and no call will be made to the API.
 - It is assumed the API will always be able to return a response with an available lift. If an error occurs, the error will be logged. More advanced error handling can be implemented when the API is more mature.
+- It is assumed the backend won't incorrectly return a lift that is not capable of servicing a floor when the user requests a lift.
+- Where animations have been used, they have been created in the file that uses them. If the application were to grow, it would be better to create a separate file for animations.
