@@ -1,10 +1,10 @@
 import "./Button.scss";
 
-const Button = ({ floorNumber, onClick }) => {
+const Button = ({ floorNumber, onClick, isDisabled }) => {
   return (
     <button
       onClick={onClick}
-      className="button"
+      className={`button ${isDisabled ? "button--disabled" : ""}`}
       value={floorNumber}
       aria-label={`Call lift to floor ${floorNumber}`}
     >

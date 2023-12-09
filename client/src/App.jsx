@@ -52,33 +52,39 @@ function App() {
     setFloors(allServicedFloors);
   }, [liftConfig]);
 
+  function mapLiftStatusData(liftsData) {
+    const result = {};
+    const updatedArrived = new Set();
+
+    for (const lift in liftsData) {
+      if (liftsData[lift].floor === userFloorRef.current) {
+        updatedArrived.add(lift);
+      }
+
+      liftsData[lift].destinations.forEach((destination) => {
+        if (!result[destination]) {
+          result[destination] = [];
+        }
+
+        result[destination].push(lift);
+      });
+    }
+
+    return [result, updatedArrived];
+  }
+
   useEffect(() => {
     if (!liftStatus) return;
-    setQueueData(
-      // can this be done more efficiently?
-      Object.entries(liftStatus.lifts).reduce(
-        (acc, [lift, { floor, destinations }]) => {
-          if (floor === userFloorRef.current) {
-            setArrived((arrived) => new Set(arrived).add(lift));
-          }
 
-          destinations.forEach((destination) => {
-            const floorObj = acc.find(({ floor }) => floor === destination);
-            if (floorObj) {
-              floorObj.lifts.push(lift);
-            } else {
-              acc.push({ floor: destination, lifts: [lift] });
-            }
-          });
+    const [mappedData, updatedArrived] = mapLiftStatusData(liftStatus.lifts);
 
-          return acc;
-        },
-        []
-      )
-    );
+    setArrived(updatedArrived);
+    setQueueData(mappedData);
   }, [liftStatus]);
 
   const onClick = async (e) => {
+    if (showModal) return;
+
     const toFloor = parseInt(e.target.value);
 
     if (liftStatus.lifts) {
@@ -116,21 +122,24 @@ function App() {
           <ButtonContainer>
             {floors.map((floor) => {
               return (
-                <Button key={floor} onClick={onClick} floorNumber={floor} />
+                <Button
+                  key={floor}
+                  onClick={onClick}
+                  floorNumber={floor}
+                  isDisabled={showModal}
+                />
               );
             })}
           </ButtonContainer>
           <DestinationTrackerContainer>
-            {queueData.map((data) => {
-              return (
-                <DestinationTrackerItem
-                  key={data.floor}
-                  floor={data.floor}
-                  lifts={data.lifts}
-                  arrived={arrived}
-                />
-              );
-            })}
+            {Object.entries(queueData).map(([floor, lifts]) => (
+              <DestinationTrackerItem
+                key={floor}
+                floor={floor}
+                lifts={lifts}
+                arrived={arrived}
+              />
+            ))}
           </DestinationTrackerContainer>
         </>
       )}
@@ -138,6 +147,7 @@ function App() {
         <Modal
           lift={modalData.lift}
           to={modalData.to}
+          showModal={showModal}
           hideModal={() => {
             setShowModal(false);
             setModalData({ lift: null, to: null, at: null });

@@ -3,19 +3,15 @@
 @keyframes fadeInOut {
   0% {
     opacity: 0;
-    pointer-events: none;
   }
   25% {
     opacity: 1;
-    pointer-events: all;
   }
   75% {
     opacity: 1;
-    pointer-events: all;
   }
   100% {
     opacity: 0;
-    pointer-events: none;
   }
 }
 
@@ -27,7 +23,10 @@
   background-color: rgba(0, 0, 0, 0.5);
   display: grid;
   place-items: center;
-  animation: fadeInOut 4s ease-in-out forwards;
+
+  &--show {
+    animation: fadeInOut 4s ease-in-out forwards;
+  }
 
   .modal__content {
     display: grid;
