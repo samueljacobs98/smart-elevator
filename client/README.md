@@ -7,7 +7,7 @@ This repository is the client for the smart-elevator project using React.
 1. Clone the smart elevator repository.
 2. Navigate to the client directory using `cd client`.
 3. Install the dependencies using `npm install`.
-4. Add a `.env` file to the root of the client directory with the minimum of following contents:
+4. Add a `.env` file to the root of the client directory with the minimum of the following contents:
 
 ```
 REACT_APP_FLOOR=<floor number where application will run>

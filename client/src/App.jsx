@@ -28,7 +28,7 @@ function App() {
     process.env.REACT_APP_FLOOR ? parseInt(process.env.REACT_APP_FLOOR) : null
   );
 
-  if (typeof userFloorRef.current !== "number" || isNaN(userFloorRef.current)) {
+  if (isNaN(userFloorRef.current)) {
     throw new EnvVariableError("REACT_APP_FLOOR");
   }
 
@@ -43,16 +43,12 @@ function App() {
 
   const getConfigCallback = useCallback(async () => {
     const config = await getConfig();
-    if (config) {
-      setLiftConfig(config);
-    }
+    if (config) setLiftConfig(config);
   }, []);
 
   const getLiftStatusCallback = useCallback(async () => {
     const status = await getLiftStatus(userFloorRef.current);
-    if (status) {
-      setLiftStatus(status);
-    }
+    if (status) setLiftStatus(status);
   }, []);
 
   useEffect(() => {
