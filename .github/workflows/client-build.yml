@@ -14,11 +14,10 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Change to client directory
-        run: cd client
-
       - name: Install dependencies
         run: npm install
+        working-directory: ./client
 
       - name: Build React App
         run: npm run build
+        working-directory: ./client
