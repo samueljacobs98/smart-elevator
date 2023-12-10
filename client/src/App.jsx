@@ -6,46 +6,32 @@ import Layout from "./components/Layout/Layout";
 import Modal from "./components/Modal/Modal";
 import DestinationTrackerContainer from "./components/DestinationTrackerContainer/DestinationTrackerContainer";
 import DestinationTrackerItem from "./components/DestinationTrackerItem/DestinationTrackerItem";
-import { getConfig, getLiftStatus, postData } from "./utils/api";
+import { getLiftConfig, getLiftStatus, requestFloor } from "./utils/api";
 import { mapLiftStatusData } from "./utils/helpers";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { EnvVariableError } from "./utils/errors";
 import LoaderModal from "./components/LoaderModal/LoaderModal";
+import Config from "./config";
 
 function App() {
   const [liftConfig, setLiftConfig] = useState(null);
   const [liftStatus, setLiftStatus] = useState(null);
   const [floors, setFloors] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [queueData, setQueueData] = useState([]);
+  const [arrived, setArrived] = useState(new Set());
   const [modalData, setModalData] = useState({
     lift: null,
     toFloor: null,
   });
-  const [queueData, setQueueData] = useState([]);
-  const [arrived, setArrived] = useState(new Set());
 
-  const userFloorRef = useRef(
-    process.env.REACT_APP_FLOOR ? parseInt(process.env.REACT_APP_FLOOR) : null
-  );
-
-  if (isNaN(userFloorRef.current) || userFloorRef.current === null) {
-    throw new EnvVariableError("REACT_APP_FLOOR");
-  }
-
-  const pollingIntervalRef = useRef(
-    process.env.REACT_APP_POLLING_INTERVAL
-      ? parseInt(process.env.REACT_APP_POLLING_INTERVAL)
-      : 10
-  );
-  if (isNaN(pollingIntervalRef.current)) {
-    throw new EnvVariableError("REACT_APP_POLLING_INTERVAL");
-  }
+  const userFloorRef = useRef(Config.userFloor);
+  const pollingIntervalRef = useRef(Config.pollingInterval);
 
   const isLoading = !Boolean(liftConfig && liftStatus);
 
   const getConfigCallback = useCallback(async () => {
-    const config = await getConfig();
-    if (config) setLiftConfig(config);
+    const liftConfig = await getLiftConfig();
+    if (liftConfig) setLiftConfig(liftConfig);
   }, []);
 
   const getLiftStatusCallback = useCallback(async () => {
@@ -110,11 +96,7 @@ function App() {
       }
     }
 
-    const { lift } = await postData(
-      "lift/request",
-      { from_floor: userFloorRef.current, to_floor: toFloor },
-      (data) => data
-    );
+    const lift = await requestFloor(userFloorRef.current, toFloor);
 
     await getLiftStatus();
 
@@ -124,8 +106,6 @@ function App() {
 
   return (
     <Layout>
-      {/* TODO: Add loading element(s) */}
-      {/* {false ? ( */}
       {isLoading ? (
         <LoaderModal />
       ) : (
