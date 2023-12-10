@@ -10,6 +10,7 @@ import { getConfig, getLiftStatus, postData } from "./utils/api";
 import { mapLiftStatusData } from "./utils/helpers";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { EnvVariableError } from "./utils/errors";
+import LoaderModal from "./components/LoaderModal/LoaderModal";
 
 function App() {
   const [liftConfig, setLiftConfig] = useState(null);
@@ -39,6 +40,8 @@ function App() {
   if (isNaN(pollingIntervalRef.current)) {
     throw new EnvVariableError("REACT_APP_POLLING_INTERVAL");
   }
+
+  const isLoading = !Boolean(liftConfig && liftStatus);
 
   const getConfigCallback = useCallback(async () => {
     const config = await getConfig();
@@ -120,11 +123,14 @@ function App() {
   };
 
   return (
-    <Layout isLoading={!Boolean(liftConfig && liftStatus)}>
-      <FloorDisplay floor={userFloorRef.current} />
+    <Layout>
       {/* TODO: Add loading element(s) */}
-      {liftConfig && liftStatus && (
+      {/* {false ? ( */}
+      {isLoading ? (
+        <LoaderModal />
+      ) : (
         <>
+          <FloorDisplay floor={userFloorRef.current} />
           <ButtonContainer>
             {floors.map((floor) => {
               if (floor === userFloorRef.current) return null;
