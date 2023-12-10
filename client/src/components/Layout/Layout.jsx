@@ -1,11 +1,7 @@
 import "./Layout.scss";
 
-const Layout = ({ isLoading, children }) => {
-  return (
-    <main className={`layout ${isLoading ? "layout--loading" : ""}`}>
-      {children}
-    </main>
-  );
+const Layout = ({ children }) => {
+  return <main className={"layout"}>{children}</main>;
 };
 
 export default Layout;

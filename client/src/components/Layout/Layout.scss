@@ -6,12 +6,6 @@
     "first first"
     "second third";
 
-  &--loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
   & > :nth-child(1) {
     grid-area: first;
   }
