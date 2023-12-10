@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FloorDisplay should match snapshot 1`] = `
+<div>
+  <h1
+    class="floor-display"
+  >
+    You are on 
+    <span
+      class="floor-display__floor"
+    >
+      Floor 
+      1
+    </span>
+  </h1>
+</div>
+`;
