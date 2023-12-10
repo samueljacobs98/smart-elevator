@@ -8,7 +8,7 @@ const DestinationTrackerItem = ({ floor, lifts, arrived }) => {
         {lifts.map((lift) => {
           const modifier = arrived.has(lift) ? "item__box__lift--arrived" : "";
           return (
-            <p key={lift} className={"item__box__lift" + modifier}>
+            <p key={lift} className={"item__box__lift " + modifier}>
               {lift}
             </p>
           );

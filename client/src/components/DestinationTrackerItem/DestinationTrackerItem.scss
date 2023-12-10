@@ -23,7 +23,10 @@
     }
 
     &__lift {
-      color: $colour-yellow;
+      &--arrived {
+        color: $colour-yellow;
+        font-weight: $font-weight-bold;
+      }
     }
   }
 }

@@ -6,11 +6,15 @@ import Layout from "./components/Layout/Layout";
 import Modal from "./components/Modal/Modal";
 import DestinationTrackerContainer from "./components/DestinationTrackerContainer/DestinationTrackerContainer";
 import DestinationTrackerItem from "./components/DestinationTrackerItem/DestinationTrackerItem";
-import { getLiftConfig, getLiftStatus, requestFloor } from "./utils/api";
-import { mapLiftStatusData } from "./utils/helpers";
-import { useEffect, useRef, useState, useCallback } from "react";
 import LoaderModal from "./components/LoaderModal/LoaderModal";
+import {
+  checkAlreadyGoingToFloor,
+  getAllServicedFloors,
+  mapLiftStatusData,
+} from "./utils/helpers";
+import { getLiftConfig, getLiftStatus, requestFloor } from "./utils/api";
 import Config from "./config";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 function App() {
   const [liftConfig, setLiftConfig] = useState(null);
@@ -44,7 +48,7 @@ function App() {
     getLiftStatusCallback();
 
     const interval = setInterval(() => {
-      getLiftStatus();
+      getLiftStatusCallback();
     }, pollingIntervalRef.current * 1000);
     return () => clearInterval(interval);
   }, [getConfigCallback, getLiftStatusCallback]);
@@ -52,16 +56,7 @@ function App() {
   useEffect(() => {
     if (!liftConfig) return;
 
-    const allServicedFloors = Object.values(liftConfig.lifts).reduce(
-      (acc, lift) => {
-        lift.serviced_floors.forEach((floor) => {
-          if (!acc.includes(floor)) acc.push(floor);
-        });
-
-        return acc;
-      },
-      []
-    );
+    const allServicedFloors = getAllServicedFloors(liftConfig.lifts);
 
     setFloors(allServicedFloors);
   }, [liftConfig]);
@@ -84,8 +79,9 @@ function App() {
     const toFloor = parseInt(e.target.value);
 
     if (liftStatus) {
-      const alreadyGoingToFloorLiftData = Object.entries(liftStatus).find(
-        ([_, { destinations }]) => destinations.includes(toFloor)
+      const alreadyGoingToFloorLiftData = checkAlreadyGoingToFloor(
+        liftStatus,
+        toFloor
       );
 
       if (alreadyGoingToFloorLiftData) {
@@ -98,7 +94,7 @@ function App() {
 
     const lift = await requestFloor(userFloorRef.current, toFloor);
 
-    await getLiftStatus();
+    await getLiftStatusCallback();
 
     setModalData({ lift, toFloor });
     setShowModal(true);

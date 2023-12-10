@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Modal should match snapshot 1`] = `
+<div>
+  <div
+    class="modal modal--show"
+  >
+    <div
+      class="modal__content"
+    >
+      <p
+        class="modal__content__title"
+      >
+        The next lift to floor 
+        5
+        :
+      </p>
+      <div
+        class="modal__content__main"
+      >
+        <img
+          alt="Left arrow"
+          class="arrow arrow--left arrow--active"
+          src="arrow.svg"
+        />
+        <p
+          class="modal__content__main__text"
+        >
+          A
+        </p>
+        <img
+          alt="Right arrow"
+          class="arrow  "
+          src="arrow.svg"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
