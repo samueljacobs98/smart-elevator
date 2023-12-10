@@ -5,13 +5,13 @@ import postData from "./postData";
 const getLiftConfig = () => getData("lift/config", (data) => data);
 
 const getLiftStatus = (userFloor) =>
-  getData("lift/status", ({ lifts }) => filterLiftStatus(lifts, userFloor));
+  getData("lift/status", (data) => filterLiftStatus(data.lifts, userFloor));
 
 const requestFloor = (userFloor, toFloor) =>
   postData(
     "lift/request",
     { from_floor: userFloor, to_floor: toFloor },
-    ({ lift }) => lift
+    (data) => data.lift
   );
 
 export { getLiftConfig, getLiftStatus, requestFloor };

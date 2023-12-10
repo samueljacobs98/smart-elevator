@@ -46,3 +46,10 @@ If you require a dummy server to be running locally, follow the instructions in 
 - It is assumed the API will always be able to return a response with an available lift. If an error occurs, the error will be logged. More advanced error handling can be implemented when the API is more mature.
 - It is assumed the backend won't incorrectly return a lift that is not capable of servicing a floor when the user requests a lift.
 - Where animations have been used, they have been created in the file that uses them. If the application were to grow, it would be better to create a separate file for animations.
+
+### Future Improvement Ideas
+
+- Add integration and end-to-end tests.
+- Add request and response data validation using a library such as [yup](https://www.npmjs.com/package/yup)
+- Use a WebSocket for live updates to the panel and delegate all lift-related state management to the backend.
+- Incorporate lift location relative to the panel into the config so that the user can be accurately informed of the lift's location.
