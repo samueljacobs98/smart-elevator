@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DestinationTrackerItem should match snapshot 1`] = `
+<div>
+  <div
+    class="item"
+  >
+    <p
+      class="item__box item__box--floor"
+    >
+      5
+    </p>
+    <div
+      class="item__box item__box--lifts"
+    >
+      <p
+        class="item__box__lift item__box__lift--arrived"
+      >
+        A
+      </p>
+      <p
+        class="item__box__lift "
+      >
+        B
+      </p>
+      <p
+        class="item__box__lift item__box__lift--arrived"
+      >
+        C
+      </p>
+    </div>
+  </div>
+</div>
+`;

@@ -53,3 +53,4 @@ If you require a dummy server to be running locally, follow the instructions in 
 - Add request and response data validation using a library such as [yup](https://www.npmjs.com/package/yup)
 - Use a WebSocket for live updates to the panel and delegate all lift-related state management to the backend.
 - Incorporate lift location relative to the panel into the config so that the user can be accurately informed of the lift's location.
+- Currently, to indicate that a lift is at the current floor, it is highlighted in yellow and made bold. However, this isn't very accessible. An alternative approach would be better. A key could be added to dictate what the yellow and bold means, though the yellow doesn't benefit people with colour-blindness. Collaboration with a UX designer would be beneficial.
