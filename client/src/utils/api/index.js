@@ -10,7 +10,6 @@ export const getData = async (path, andThen, onError = defaultOnError) => {
     const response = await axios.get(`${baseUrl}/${path}`);
     return andThen(response.data);
   } catch (error) {
-    // TODO: improve error handling
     onError(error);
   }
 };
