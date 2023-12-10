@@ -49,6 +49,10 @@ If you require a dummy server to be running locally, follow the instructions in 
 
 ### Future Improvement Ideas
 
+#### Top Priority
+
+- Though the current `App` component allows a majority of the state to be localised, it could still be split into smaller components. If this was the case, it would be preferable to use the Context API or a state management library such as Redux.
+- Add App.test.jsx for the `App` component.
 - Add integration and end-to-end tests.
 - Add request and response data validation using a library such as [yup](https://www.npmjs.com/package/yup)
 - Use a WebSocket for live updates to the panel and delegate all lift-related state management to the backend.
