@@ -19,5 +19,9 @@ jobs:
         working-directory: ./client
 
       - name: Build React App
+        env:
+          REACT_APP_API_URL: "http://localhost:3001/api"
+          REACT_APP_FLOOR: "0"
+          REACT_APP_POLLING_INTERVAL: "100"
         run: npm run build
         working-directory: ./client
