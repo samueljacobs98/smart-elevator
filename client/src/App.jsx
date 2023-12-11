@@ -1,35 +1,30 @@
 import "./App.scss";
-import Button from "./components/Button/Button";
-import ButtonContainer from "./components/ButtonContainer/ButtonContainer";
-import FloorDisplay from "./components/FloorDisplay/FloorDisplay";
 import Layout from "./components/Layout/Layout";
 import Modal from "./components/Modal/Modal";
-import DestinationTrackerContainer from "./components/DestinationTrackerContainer/DestinationTrackerContainer";
-import DestinationTrackerItem from "./components/DestinationTrackerItem/DestinationTrackerItem";
 import LoaderModal from "./components/LoaderModal/LoaderModal";
-import {
-  checkAlreadyGoingToFloor,
-  getAllServicedFloors,
-  mapLiftStatusData,
-} from "./utils/helpers";
-import { getLiftConfig, getLiftStatus, requestFloor } from "./utils/api";
+import FloorDisplay from "./components/FloorDisplay/FloorDisplay";
+import ButtonPanel from "./components/ButtonPanel/ButtonPanel";
+import DestinationTrackerPanel from "./components/DestinationTrackerPanel/DestinationTrackerPanel";
 import Config from "./config";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { SmartElevatorContext } from "./context/SmartElevatorProvider";
+import { getLiftConfig } from "./utils/api";
+import { getAllServicedFloors, mapLiftStatusData } from "./utils/helpers";
+import { useEffect, useState, useCallback, useContext } from "react";
 
 function App() {
   const [liftConfig, setLiftConfig] = useState(null);
-  const [liftStatus, setLiftStatus] = useState(null);
-  const [floors, setFloors] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [queueData, setQueueData] = useState([]);
-  const [arrived, setArrived] = useState(new Set());
-  const [modalData, setModalData] = useState({
-    lift: null,
-    toFloor: null,
-  });
 
-  const userFloorRef = useRef(Config.userFloor);
-  const pollingIntervalRef = useRef(Config.pollingInterval);
+  const {
+    liftStatus,
+    setFloors,
+    setArrived,
+    setQueueData,
+    showModal,
+    modalData,
+    setShowModal,
+    setModalData,
+    getLiftStatusCallback,
+  } = useContext(SmartElevatorContext);
 
   const isLoading = !Boolean(liftConfig && liftStatus);
 
@@ -38,18 +33,13 @@ function App() {
     if (liftConfig) setLiftConfig(liftConfig);
   }, []);
 
-  const getLiftStatusCallback = useCallback(async () => {
-    const status = await getLiftStatus(userFloorRef.current);
-    if (status) setLiftStatus(status);
-  }, []);
-
   useEffect(() => {
     getConfigCallback();
     getLiftStatusCallback();
 
     const interval = setInterval(() => {
       getLiftStatusCallback();
-    }, pollingIntervalRef.current * 1000);
+    }, Config.pollingInterval * 1000);
     return () => clearInterval(interval);
   }, [getConfigCallback, getLiftStatusCallback]);
 
@@ -59,46 +49,19 @@ function App() {
     const allServicedFloors = getAllServicedFloors(liftConfig.lifts);
 
     setFloors(allServicedFloors);
-  }, [liftConfig]);
+  }, [liftConfig, setFloors]);
 
   useEffect(() => {
     if (!liftStatus) return;
 
     const [mappedData, updatedArrived] = mapLiftStatusData(
       liftStatus,
-      userFloorRef.current
+      Config.userFloor
     );
 
     setArrived(updatedArrived);
     setQueueData(mappedData);
-  }, [liftStatus]);
-
-  const onClick = async (e) => {
-    if (showModal) return;
-
-    const toFloor = parseInt(e.target.value);
-
-    if (liftStatus) {
-      const alreadyGoingToFloorLiftData = checkAlreadyGoingToFloor(
-        liftStatus,
-        toFloor
-      );
-
-      if (alreadyGoingToFloorLiftData) {
-        const lift = alreadyGoingToFloorLiftData[0];
-        setModalData({ lift, toFloor });
-        setShowModal(true);
-        return;
-      }
-    }
-
-    const lift = await requestFloor(userFloorRef.current, toFloor);
-
-    await getLiftStatusCallback();
-
-    setModalData({ lift, toFloor });
-    setShowModal(true);
-  };
+  }, [liftStatus, setArrived, setQueueData]);
 
   return (
     <Layout>
@@ -106,33 +69,9 @@ function App() {
         <LoaderModal />
       ) : (
         <>
-          <FloorDisplay floor={userFloorRef.current} />
-          <ButtonContainer>
-            {floors.map((floor) => {
-              if (floor === userFloorRef.current) return null;
-              return (
-                <Button
-                  key={floor}
-                  onClick={onClick}
-                  floorNumber={floor}
-                  isDisabled={showModal}
-                />
-              );
-            })}
-          </ButtonContainer>
-          <DestinationTrackerContainer>
-            {Object.entries(queueData).map(([floor, lifts]) => {
-              if (parseInt(floor) === userFloorRef.current) return null;
-              return (
-                <DestinationTrackerItem
-                  key={floor}
-                  floor={floor}
-                  lifts={lifts}
-                  arrived={arrived}
-                />
-              );
-            })}
-          </DestinationTrackerContainer>
+          <FloorDisplay />
+          <ButtonPanel />
+          <DestinationTrackerPanel />
         </>
       )}
       {showModal && (
