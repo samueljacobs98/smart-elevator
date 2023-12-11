@@ -10,7 +10,7 @@ exports[`FloorDisplay should match snapshot 1`] = `
       class="floor-display__floor"
     >
       Floor 
-      1
+      5
     </span>
   </h1>
 </div>

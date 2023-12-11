@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`ButtonContainer should match snapshot 1`] = `
-<div>
-  <div
-    class="button-container"
-  />
-</div>
-`;

@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DestinationTrackerPanel should match snapshot 1`] = `
+<div>
+  <div
+    class="destination-tracker-panel"
+  >
+    <div
+      arrived="[object Set]"
+      data-testid="destination-tracker-item"
+      floor="1"
+      lifts="lift 1"
+    >
+      1
+    </div>
+    <div
+      arrived="[object Set]"
+      data-testid="destination-tracker-item"
+      floor="3"
+      lifts="lift 3"
+    >
+      3
+    </div>
+  </div>
+</div>
+`;

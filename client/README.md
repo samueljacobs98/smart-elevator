@@ -46,8 +46,6 @@ When creating a pull request, the tests will be run automatically using GitHub A
 
 - If the floor the user is on is not a destination of a given lift it will not be expected to stop at that floor. Therefore, if the lift is not currently on the user's floor, it should not be listed on the panel.
 - As there could be multiple panels, it is assumed that the state management of the system is all handled by the backend. Ideally, an approach such as a WebSocket would allow live updates to the panels. Since the system state data is retrieved from the backend via a REST API, a polling approach has been used to update the state of the panel. The polling interval is configurable via the `.env` file.
-- As the application is fairly simple, the state management is handled by the `App` component. If the application were to grow the Context API or a state management library such as Redux could be used.
-- Likewise, as the application is fairly simple, the `App` component handled most of the logic. Again, if the application were to grow, the logic could be moved into separate components.
 - If a user calls a lift to a floor that is already a destination of a suitable given lift, this lift will be displayed in the modal and no call will be made to the API.
 - It is assumed the API will always be able to return a response with an available lift. If an error occurs, the error will be logged. More advanced error handling can be implemented when the API is more mature.
 - It is assumed the backend won't incorrectly return a lift for a given floor that is not on its `serviced_floors` list..
@@ -57,8 +55,8 @@ When creating a pull request, the tests will be run automatically using GitHub A
 
 #### Top Priority
 
-- Though the current `App` component allows a majority of the state to be localised, it could still be split into smaller components. If this was the case, it would be preferable to use the Context API or a state management library such as Redux.
 - Add App.test.jsx for the `App` component.
+- Completed the unit tests for the `ButtonPanel` component.
 - Add integration and end-to-end tests.
 - Improve error handling (**blocker**: requires the API to be more mature).
 
